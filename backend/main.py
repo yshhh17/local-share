@@ -34,6 +34,7 @@ def conn_handler(conn, addr):
                     "\r\n"
                     + html
                     ).encode()
+            conn.sendall(response)
 
         elif path == '/style.css':
             f = open("../frontend/style.css", "r")
@@ -46,6 +47,7 @@ def conn_handler(conn, addr):
                     "\r\n"
                     + css
                     ).encode()
+            conn.sendall(response)
     else:
         body = b"ERROR 404 Not Found"
         response = (
@@ -53,8 +55,8 @@ def conn_handler(conn, addr):
                 "Content-Type: text/html\r\n"
                 f"Content-Length: {len(html)}\r\n"
                 "\r\n").encode() + body
+        conn.sendall(response)
 
-    conn.sendall(response if isinstance(response, bytes) else response.encode())
     conn.close()
 
 HOST = '0.0.0.0'
