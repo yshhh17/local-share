@@ -1,6 +1,7 @@
 import socket
 import os
 import threading
+from discovery_handler import start_listening
 
 def conn_handler(conn, addr):
     f = open("../frontend/index.html", "r")
@@ -66,6 +67,9 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server.bind((HOST, PORT))
 server.listen()
+
+th = threading.Thread(target = start_listening, daemon = True)
+th.start()
 
 print(f"server is running on http://{HOST}:{PORT}")
 
