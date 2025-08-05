@@ -1,53 +1,27 @@
-/* General body styling */
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: #f0f2f5; /* A light grey background */
-    color: #1c1e21; /* Dark grey text for good contrast */
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    box-sizing: border-box;
+/* Styling for the new devices section */
+.devices-section {
+    margin-top: 30px;
+    border-top: 1px solid #dddddd;
+    padding-top: 20px;
 }
 
-/* A container for our main content */
-.container {
-    background-color: #ffffff; /* White background for the card */
-    padding: 30px 40px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    width: 100%;
-    text-align: center;
+#device-list {
+list-style-type: none;
+padding: 0;
+margin-top: 20px;
 }
 
-/* Styling for the main heading */
-h1 {
-    font-size: 2em;
-    color: #000000;
-    margin-bottom: 20px;
+#device-list li {
+background-color: #f0f2f5;
+padding: 12px 15px;
+border-radius: 8px;
+margin-bottom: 10px;
+font-weight: 500;
 }
 
-/* Styling for paragraphs */
-p {
-    font-size: 1.1em;
-    line-height: 1.6;
-}
-
-/* Basic button styling (we'll use this later) */
-.button {
-    background-color: #007bff;
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1em;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.button:hover {
-    background-color: #0056b3;
+#device-list li.no-devices {
+background-color: transparent;
+color: #606770;
+font-style: italic;
+font-weight: 400;
 }

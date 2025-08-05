@@ -1,13 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title> My app </title>
-	<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Sharer</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-	<div class="container">
-        <h1>Welcome to my Local Sharer!</h1>
-        <p>If you can see this, the server is working correctly.</p>
+
+    <div class="container">
+        <h1>Local Sharer</h1>
+        <p>A simple app to share files on your local network.</p>
+
+        <!-- New Section for Devices -->
+        <div class="devices-section">
+            <h2>Available Devices</h2>
+            <button id="refresh-btn" class="button">Refresh List</button>
+            <ul id="device-list">
+                <!-- Discovered devices will be added here by JavaScript -->
+                <li class="no-devices">Click "Refresh" to search for devices...</li>
+            </ul>
+        </div>
+
     </div>
+
+    <!-- IMPORTANT: Link to the JavaScript file at the end of the body -->
+    <script src="script.js"></script>
+
 </body>
 </html>
