@@ -71,7 +71,7 @@ def conn_handler(conn, addr):
                 result = ', '.join(str(device) for device in devices_list)
             else:
                 result = "no devices found or error finding devices..."
-            body = f"<html><body><h1> here is the list of the ip's you were looking for: {result}</h1></body></html>"
+            body = f" here is the list of the ip's you were looking for: {result}"
             response = (
                     "HTTP/1.1 200 OK\r\n"
                     "Content-Type: text/html\r\n"
