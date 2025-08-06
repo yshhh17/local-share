@@ -18,7 +18,7 @@ def start_listening():
             data, addr = sockt.recvfrom(BUFFER_SIZE)
             message = data.decode().strip()
 
-            if message == DISCOVERY_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PING:
+            if message == DISCOVERY_PING:
                 print(f"[DISCOVERY] ping from {addr[0]}")
                 sockt.sendto(DISCOVERY_PONG.encode(), addr)
 
@@ -39,9 +39,6 @@ def send_broadcast():
         start_time = time.time()
 
         while True:
-
-            if time.time() - start_time > TIMEOUT:
-                break
 
             try:
                 data, addr = sockt.recvfrom(BUFFER_SIZE)

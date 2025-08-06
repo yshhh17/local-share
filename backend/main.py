@@ -2,6 +2,7 @@ import socket
 import os
 import threading
 from discovery_handler import start_listening
+from discovery_handler import send_broadcast
 
 def conn_handler(conn, addr):
     f = open("../frontend/index.html", "r")
@@ -49,6 +50,37 @@ def conn_handler(conn, addr):
                     + css
                     ).encode()
             conn.sendall(response)
+
+        elif path == '/script.js':
+            f = open("../frontend/script.js", "r")
+            js = f.read()
+            f.close
+
+            response = (
+                    "HTTP/1.1 200 OK\r\n"
+                    f"Content-Type: application/javascript\r\n"
+                    "Content-Length: {len(js)}\r\n"
+                    "\r\n"
+                    + js
+                    ).encode()
+            conn.sendall(response)
+
+        elif path == '/api/discovery':
+            devices_list = send_broadcast()
+            if devices_list and isinstance(devices_list, (list, tuple)):
+                result = ', '.join(str(device) for device in devices_list)
+            else:
+                result = "no devices found or error finding devices..."
+            body = f"<html><body><h1> here is the list of the ip's you were looking for: {result}</h1></body></html>"
+            response = (
+                    "HTTP/1.1 200 OK\r\n"
+                    "Content-Type: text/html\r\n"
+                    f"Content-Length: {len(body)}\r\n"
+                    "\r\n"
+                    + body
+                    ).encode()
+            conn.sendall(response)
+
     else:
         body = b"ERROR 404 Not Found"
         response = (
