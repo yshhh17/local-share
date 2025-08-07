@@ -8,6 +8,9 @@ def save_uploaded_files(request_data: bytes) -> str:
     except:
         raise ValueError("Invalid HTTP request: Headers and Body not seperated")
 
+    print("\n-- Body data right here ---\n")
+    print("\n----------------------\n")
+
     headers_text = header_raw.decode(errors='ignore')
     match = re.search(r'boundary="?([^";\r\n]+)"?', headers_text)
     if not match:

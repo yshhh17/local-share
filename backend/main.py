@@ -12,21 +12,20 @@ def conn_handler(conn, addr):
 
     print(f"connection from {addr}")
 
-    request = conn.recv(10000000).decode('utf-8')
-    print(f"request: {request}")
+    request = conn.recv(10000000)
 
     if not request:
         conn.close()
         return
 
-    request_line = request.splitlines()[0]
-    parts = request_line.split()
-
-    if len(parts) < 2:
-        conn.close()
+    try:
+        header_raw, body_raw = request.split(b'\r\n', 1)
+    except ValueError:
         return
 
-    method, path = parts[0], parts[1]
+    header_text = header_raw.decode(errors='ignore')
+    first_line = header_text.splitlines('\r\n')[0]
+    method, path, _ = first_line.split(' ', 2)
 
     if method == 'GET':
         if path == '/':
@@ -86,9 +85,7 @@ def conn_handler(conn, addr):
         if path == '/api/upload':
             print("[SERVER] received a POST request to /api/upload")
 
-            request_bytes = request.encode(errors = 'ignore')
-
-            save_uploaded_files(request_bytes)
+            save_uploaded_files(request)
 
             body = "<html><body><h1>File Uploaded Success...</h1></body></html>"
             response = (
