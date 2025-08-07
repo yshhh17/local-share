@@ -3,6 +3,7 @@ import os
 import threading
 from discovery_handler import start_listening
 from discovery_handler import send_broadcast
+from transfer_handler import save_uploaded_files
 
 def conn_handler(conn, addr):
     f = open("../frontend/index.html", "r")
@@ -11,7 +12,7 @@ def conn_handler(conn, addr):
 
     print(f"connection from {addr}")
 
-    request = conn.recv(1024).decode('utf-8')
+    request = conn.recv(10000000).decode('utf-8')
     print(f"request: {request}")
 
     if not request:
@@ -72,6 +73,24 @@ def conn_handler(conn, addr):
             else:
                 result = "no devices found or error finding devices..."
             body = f" here is the list of the ip's you were looking for: {result}"
+            response = (
+                    "HTTP/1.1 200 OK\r\n"
+                    "Content-Type: text/html\r\n"
+                    f"Content-Length: {len(body)}\r\n"
+                    "\r\n"
+                    + body
+                    ).encode()
+            conn.sendall(response)
+
+    elif method == 'POST':
+        if path == '/api/upload':
+            print("[SERVER] received a POST request to /api/upload")
+
+            request_bytes = request.encode(errors = 'ignore')
+
+            save_uploaded_files(request_bytes)
+
+            body = "<html><body><h1>File Uploaded Success...</h1></body></html>"
             response = (
                     "HTTP/1.1 200 OK\r\n"
                     "Content-Type: text/html\r\n"

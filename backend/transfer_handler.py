@@ -9,9 +9,37 @@ def save_uploaded_files(request_data: bytes) -> str:
         raise ValueError("Invalid HTTP request: Headers and Body not seperated")
 
     headers_text = header_raw.decode(errors='ignore')
-    match = re.search(r'Content-Type:\s*multipart/form-data;\s*boundary=(.+)', headers_text)
+    match = re.search(r'boundary="?([^";\r\n]+)"?', headers_text)
     if not match:
         raise ValueError("Boundary not found in headers")
 
     boundary = match.group(1)
     boundary_bytes = b'--' + boundary.encode()
+
+    parts = body.split(boundary_bytes)
+
+    for part in parts:
+        if b"Content-Disposition" in part and b'filename="' in part:
+            try:
+                headers, file_content = part.split(b"\r\n\r\n", 1)
+                file_content = file_content.rsplit(b"\r\n", 1)[0]
+
+                filename_match = re.search(rb'filename="([^"]+)"', headers)
+                if not filename_match:
+                    continue
+                filename = filename_match.group(1).decode()
+
+                safe_filename = os.path.basename(filename)
+
+                os.makedirs("uploads", exist_ok=True)
+                filepath = os.path.join("uploads",safe_filename)
+                f = open(filepath, 'wb')
+                f.write(file_content)
+                f.close()
+
+                print(f"saved to: {filepath}")
+                return filepath
+            except Exception as e:
+                raise ValueError(f"failed to process file part: {e}")
+
+    raise ValueError("No file found in request")
