@@ -1,6 +1,8 @@
 // This line waits for the entire HTML page to be loaded before running any code.
 document.addEventListener('DOMContentLoaded', () => {
 
+    // --- DEVICE DISCOVERY SECTION ---
+
     // Get references to the HTML elements we need to interact with.
     const refreshButton = document.getElementById('refresh-btn');
     const deviceList = document.getElementById('device-list');
@@ -9,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // The 'fetchDevices' function will run every time the button is clicked.
     refreshButton.addEventListener('click', fetchDevices);
 
-    // This is the main function that talks to our Python backend.
+    // This is the main function that talks to our Python backend for discovery.
     function fetchDevices() {
         // Clear the current list and show a "searching" message.
         deviceList.innerHTML = '<li class="no-devices">Searching for devices...</li>';
@@ -52,4 +54,51 @@ document.addEventListener('DOMContentLoaded', () => {
             deviceList.innerHTML = '<li class="no-devices">Error finding devices. Check console.</li>';
         });
     }
+
+
+    // --- FILE UPLOAD SECTION ---
+
+    // Get references to the new HTML elements for the upload form.
+    const uploadForm = document.getElementById('upload-form');
+    const fileInput = document.getElementById('file-input');
+
+    // Add a "submit" event listener to the form.
+    uploadForm.addEventListener('submit', event => {
+        // Prevent the browser's default form submission behavior.
+        event.preventDefault();
+
+        const file = fileInput.files[0];
+
+        if (!file) {
+            alert('Please select a file first!');
+            return;
+        }
+
+        // Wrap the file in a FormData object. This is the correct, modern way.
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Make the fetch call WITHOUT the manual headers object.
+        // The browser will automatically create the correct 'Content-Type'
+        // header with the necessary boundary string.
+        fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Server responded with ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(result => {
+            alert('File sent successfully!');
+            console.log('Server response:', result);
+            uploadForm.reset(); // Clear the file input
+        })
+        .catch(error => {
+            console.error('Error uploading file:', error);
+            alert('Error uploading file. See console for details.');
+        });
+    });
 });

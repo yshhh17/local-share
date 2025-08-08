@@ -10,21 +10,27 @@
 
     <div class="container">
         <h1>Local Sharer</h1>
-        <p>A simple app to share files on your local network.</p>
 
-        <!-- New Section for Devices -->
-        <div class="devices-section">
+        <!-- New Section for Uploading Files -->
+        <div class="card">
+            <h2>Send a File</h2>
+            <form id="upload-form">
+                <input type="file" id="file-input" required>
+                <button type="submit" class="button">Send File</button>
+            </form>
+        </div>
+
+        <!-- Existing Section for Devices -->
+        <div class="card">
             <h2>Available Devices</h2>
             <button id="refresh-btn" class="button">Refresh List</button>
             <ul id="device-list">
-                <!-- Discovered devices will be added here by JavaScript -->
-                <li class="no-devices">Click "Refresh" to search for devices...</li>
+                <li class="no-devices">Click "Refresh" to search...</li>
             </ul>
         </div>
 
     </div>
 
-    <!-- IMPORTANT: Link to the JavaScript file at the end of the body -->
     <script src="script.js"></script>
 
 </body>
