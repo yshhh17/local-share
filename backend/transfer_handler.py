@@ -9,6 +9,7 @@ def save_uploaded_files(request_data: bytes) -> str:
         raise ValueError("Invalid HTTP request: Headers and Body not seperated")
 
     print("\n-- Body data right here ---\n")
+    print(body[:500])
     print("\n----------------------\n")
 
     headers_text = header_raw.decode(errors='ignore')
@@ -24,8 +25,11 @@ def save_uploaded_files(request_data: bytes) -> str:
     for part in parts:
         if b"Content-Disposition" in part and b'filename="' in part:
             try:
-                headers, file_content = part.split(b"\r\n\r\n", 1)
-                file_content = file_content.rsplit(b"\r\n", 1)[0]
+                headers, rest = part.split(b"\r\n\r\n", 1)
+                if rest.endswith(b"\r\n"):
+                    rest = rest[:-2]
+
+                file_content = rest
 
                 filename_match = re.search(rb'filename="([^"]+)"', headers)
                 if not filename_match:
