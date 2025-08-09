@@ -51,20 +51,6 @@ def conn_handler(conn, addr):
                     ).encode()
             conn.sendall(response)
 
-        elif path == '/script.js':
-            f = open("../frontend/script.js", "r")
-            js = f.read()
-            f.close
-
-            response = (
-                    "HTTP/1.1 200 OK\r\n"
-                    f"Content-Type: application/javascript\r\n"
-                    "Content-Length: {len(js)}\r\n"
-                    "\r\n"
-                    + js
-                    ).encode()
-            conn.sendall(response)
-
         elif path == '/api/discovery':
             devices_list = send_broadcast()
             if devices_list and isinstance(devices_list, (list, tuple)):
@@ -81,19 +67,41 @@ def conn_handler(conn, addr):
                     ).encode()
             conn.sendall(response)
 
+        elif path == '/api/files':
+            FILES_DIR = 'Downloads'
+            os.makedirs('Downloads', exist_ok=True)
+            files = os.listdir(FILES_DIR)
+            files = [f for f in files if os.path.isfile(os.path.join(FILES_DIR, f))]
+            html = "<html><body><h2>Files: </h2><ul>"
+            for file in files:
+                html += f'<li><a href = "{file}">{file}</a></li>'
+            html += "</ul></body></html>"
+
+            response = (
+                    "HTTP/1.1 200 OK\r\n"
+                    "Content-Type: text/html\r\n"
+                    f"Content-Length: {len(html)}\r\n"
+                    "\r\n"
+                    + html
+                    ).encode()
+            conn.sendall(response)
+            
+
     elif method == 'POST':
         if path == '/api/upload':
             print("[SERVER] received a POST request to /api/upload")
 
             save_uploaded_files(request)
+            f = open('../frontend/success.html', 'r')
+            msg = f.read()
+            f.close()
 
-            body = "<html><body><h1>File Uploaded Success...</h1></body></html>"
             response = (
                     "HTTP/1.1 200 OK\r\n"
                     "Content-Type: text/html\r\n"
-                    f"Content-Length: {len(body)}\r\n"
+                    f"Content-Length: {len(msg)}\r\n"
                     "\r\n"
-                    + body
+                    + msg
                     ).encode()
             conn.sendall(response)
 
