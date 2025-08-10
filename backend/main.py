@@ -1,6 +1,7 @@
 import socket
 import os
 import threading
+import mimetypes
 from discovery_handler import start_listening
 from discovery_handler import send_broadcast
 from transfer_handler import save_uploaded_files
@@ -9,6 +10,10 @@ def conn_handler(conn, addr):
     f = open("../frontend/index.html", "r")
     html = f.read()
     f.close()
+
+    g = open("../frontend/success.html", "r")
+    msg = g.read()
+    g.close()
 
     print(f"connection from {addr}")
 
@@ -67,24 +72,44 @@ def conn_handler(conn, addr):
                     ).encode()
             conn.sendall(response)
 
-        elif path == '/api/files':
-            FILES_DIR = 'Downloads'
-            os.makedirs('Downloads', exist_ok=True)
-            files = os.listdir(FILES_DIR)
-            files = [f for f in files if os.path.isfile(os.path.join(FILES_DIR, f))]
-            html = "<html><body><h2>Files: </h2><ul>"
-            for file in files:
-                html += f'<li><a href = "{file}">{file}</a></li>'
-            html += "</ul></body></html>"
+        else:
+            if path == '/api/files':
+                os.makedirs('Downloads', exist_ok=True)
+                files = os.listdir('Downloads')
+                files = [f for f in files if os.path.isfile(os.path.join('Downloads', f))]
+                html = "<html><body><h2>Files: </h2><ul>"
+                for file in files:
+                    html += f'<li><a href = "{file}">{file}</a></li>'
+                html += "</ul></body></html>"
 
-            response = (
-                    "HTTP/1.1 200 OK\r\n"
-                    "Content-Type: text/html\r\n"
-                    f"Content-Length: {len(html)}\r\n"
-                    "\r\n"
-                    + html
-                    ).encode()
-            conn.sendall(response)
+                response = (
+                        "HTTP/1.1 200 OK\r\n"
+                        "Content-Type: text/html\r\n"
+                        f"Content-Length: {len(html)}\r\n"
+                        "\r\n"
+                        + html
+                        ).encode()
+                conn.sendall(response)
+
+            else:
+                path = path.lstrip("/api")
+                paths = os.path.join('Downloads', path)
+                mime_type, _ = mimetypes.guess_type(paths)
+                mime_type = mime_type or "application/octed-stream"
+
+                f = open(paths, 'r')
+                data = f.read()
+                f.close()
+
+                response = (
+                        "HTTP/1.1 200 OK\r\n"
+                        f"Content-Type: {mime_type}\r\n"
+                        f"Content-Length: {len(data)}\r\n"
+                        "\r\n"
+                        + data
+                        ).encode()
+
+                conn.sendall(response)
             
 
     elif method == 'POST':
@@ -92,9 +117,6 @@ def conn_handler(conn, addr):
             print("[SERVER] received a POST request to /api/upload")
 
             save_uploaded_files(request)
-            f = open('../frontend/success.html', 'r')
-            msg = f.read()
-            f.close()
 
             response = (
                     "HTTP/1.1 200 OK\r\n"
