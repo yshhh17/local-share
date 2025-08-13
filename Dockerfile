@@ -9,6 +9,6 @@ RUN pip install --no-cache-dir -r ./backend/requirements.txt
 COPY ./backend ./backend
 COPY ./frontend ./frontend
 
-EXPOSE 50001
+EXPOSE 8080
 
 CMD ["python3", "./backend/main.py"]
